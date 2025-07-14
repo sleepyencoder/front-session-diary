@@ -4,16 +4,34 @@ import Editor from "../components/Editor"
 import { useNavigate } from "react-router-dom"
 import { useContext } from "react"
 import { DiaryDispatchContext } from "../App"
+import axios from "../api/axios"
 
 const New = () => {
     const { onCreate } = useContext(DiaryDispatchContext)
     const nav = useNavigate();
 
-    const onSubmit = (input) => {
-        onCreate(input.createdDate.getTime(), input.emotionId, input.content)
-        // replace 옵션 : 뒤로가기를 방지하면서 페이지 이동하는 옵션
-        nav('/', {replace: true})
-    }
+    // const onSubmit = (input) => {
+    //     onCreate(input.createdDate.getTime(), input.emotionId, input.content)
+    //     // replace 옵션 : 뒤로가기를 방지하면서 페이지 이동하는 옵션
+    //     nav('/', {replace: true})
+    // }
+    const onSubmit = async (input) => {
+        await axios.post("/api/diaries", {
+        content: input.content,
+        emotionId: input.emotionId,
+        createdDate: input.createdDate.getTime(),
+        });
+
+        // id는 로컬에서 생성
+        onCreate(
+        input.createdDate.getTime(),
+        input.emotionId,
+        input.content
+        );
+    
+
+        nav("/", { replace: true });
+    };
 
     return (
         <div>

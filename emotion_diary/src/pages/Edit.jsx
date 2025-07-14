@@ -2,10 +2,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Editor from "../components/Editor";
-import { useContext, useEffect, useState } from "react"
-import { DiaryDispatchContext, DiaryStateContext } from "../App"
-import DiaryItem from '../components/DiaryItem';
-import useDiary from "../hooks/useDiary"
+import { useContext } from "react"
+import { DiaryDispatchContext } from "../App"
+import DiaryItem from "../components/DiaryItem";
+import useDiaryServer from "../hooks/useDiaryServer";
 
 const Edit = () => {
     // useParams : 리액트 라우터의 URL 파라미터를 불러오는 Hook
@@ -14,7 +14,8 @@ const Edit = () => {
     const nav = useNavigate();
     const { onDelete, onUpdate } = useContext(DiaryDispatchContext);
     
-    const curDiaryItem = useDiary(params.id);
+    // const curDiaryItem = useDiary(params.id);
+    const curDiaryItem = useDiaryServer(params.id);
 
     const onClickDelete = () => {
         if (
@@ -60,7 +61,9 @@ const Edit = () => {
 
     return  (
         <div>
-            <Header title={"일기 수정하기"} leftChild={<Button onClick={() => nav(-1)} text={"< 뒤로 가기"} />} rightChild={<Button onClick={onClickDelete} text={"삭제하기"} type={"NEGATIVE"} />} />
+            <Header title={"일기 수정하기"} 
+                leftChild={<Button onClick={() => nav(-1)} text={"< 뒤로 가기"} />} 
+                rightChild={<Button onClick={onClickDelete} text={"삭제하기"} type={"NEGATIVE"} />} />
             <Editor initData={curDiaryItem} onSubmit={onSubmit} />
         </div>
     )
