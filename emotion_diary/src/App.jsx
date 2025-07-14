@@ -51,6 +51,11 @@ function App() {
   const [data, dispatch] = useReducer(reducer, []);
   const idRef = useRef(0);
 
+
+
+
+
+
   const [posts, setPosts] = useState([]);
 
   // 컴포넌트 마운트 시 게시글 목록 가져오기
@@ -59,6 +64,12 @@ function App() {
       setPosts(res.data);
     });
   }, []); // 빈 의존성 배열(= 한 번만 실행)
+
+
+
+
+
+
   
 
   useEffect(() => {
