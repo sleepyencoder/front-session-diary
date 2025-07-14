@@ -11,6 +11,9 @@ import Header from "./components/Header";
 
 import { getEmotionImage } from "./util/get-emotion-image";
 
+import axios from "./api/axios";
+
+
 function reducer(state, action) {
   let nextState;
 
@@ -47,6 +50,16 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [data, dispatch] = useReducer(reducer, []);
   const idRef = useRef(0);
+
+  const [posts, setPosts] = useState([]);
+
+  // 컴포넌트 마운트 시 게시글 목록 가져오기
+  useEffect(() => {
+    axios.get("/posts?_limit=5").then((res) => {
+      setPosts(res.data);
+    });
+  }, []); // 빈 의존성 배열(= 한 번만 실행)
+  
 
   useEffect(() => {
     const storedData = localStorage.getItem("diary");
