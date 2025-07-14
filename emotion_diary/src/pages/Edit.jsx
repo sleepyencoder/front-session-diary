@@ -4,8 +4,8 @@ import Button from "../components/Button";
 import Editor from "../components/Editor";
 import { useContext } from "react"
 import { DiaryDispatchContext } from "../App"
-import DiaryItem from "../components/DiaryItem";
 import useDiaryServer from "../hooks/useDiaryServer";
+import axios from "../api/axios";
 
 const Edit = () => {
     // useParams : 리액트 라우터의 URL 파라미터를 불러오는 Hook
@@ -17,7 +17,7 @@ const Edit = () => {
     // const curDiaryItem = useDiary(params.id);
     const curDiaryItem = useDiaryServer(params.id);
 
-    const onClickDelete = () => {
+    const onClickDelete = async () => {
         if (
         // 브라우저의 내장기능을 활용하는 함수 : 확인과 취소 버튼이 달려있는 팝업창을 발생시키는 기능
         // 인수로 팝업에 나타날 메세지를 넣으면 됨
@@ -26,6 +26,7 @@ const Edit = () => {
         ) {
             // 일기 삭제 로직
             // App.jsx에서 onDelete 함수의 인수로 id를 받고 있기 때문
+            await axios.delete(`/api/diaries/${params.id}`);
             onDelete(params.id);
             nav("/", {replace: true});
         }
@@ -49,13 +50,30 @@ const Edit = () => {
     // const currentDiaryItem = getCurrentDiaryItem();
     // console.log(currentDiaryItem)
 
-    const onSubmit = (input) => {
-        if (
-            window.confirm("일기를 정말 수정할까요?")
-        ) {
-            // Editor 컴포넌트의 input state의 createdDate 값은 데이트 객체이기 때문에 타임 스탬프로 변환
-            onUpdate(params.id, input.createdDate.getTime(), input.emotionId, input.content);
-            nav('/',{replace: true})
+    const onSubmit = async (input) => {
+        if ( window.confirm("일기를 정말 수정할까요?")) {
+            // // Editor 컴포넌트의 input state의 createdDate 값은 데이트 객체이기 때문에 타임 스탬프로 변환
+            // onUpdate(params.id, input.createdDate.getTime(), input.emotionId, input.content);
+            // nav('/',{replace: true})
+
+            // ✅ 서버에 PUT 요청
+            const res = await axios.put(`/api/diaries/${params.id}`, {
+                content: input.content,
+                emotionId: input.emotionId,
+                createdDate: input.createdDate.getTime()
+            });
+
+            const updated = res.data;
+
+            // ✅ 로컬 상태 업데이트
+            onUpdate(
+                updated.id,
+                updated.createDate, // 주의: createDate 필드명
+                updated.emotionId,
+                updated.content
+            );
+
+            nav("/", { replace: true });
         }
     }
 
